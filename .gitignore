@@ -1,0 +1,4 @@
+bin/
+.cache/
+.tgpc/
+compile_commands.json
