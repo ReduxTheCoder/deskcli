@@ -2,7 +2,9 @@
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
+#include <exception>
 #include <vector>
 
 using path = std::filesystem::path;
@@ -54,31 +56,44 @@ DesktopFile build_desktop_file_class(int argc, const char **argv) {
     std::string name, comment, exec_path, icon_path, categories;
     bool is_terminal = false, system_wide = false;
 
-    std::vector<std::string> positionals;
+    std::vector<std::string> arguments;
+    std::vector<std::string> flags;
 
+    // Starts the vectors
     for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
+        std::string arg(argv[i]);
 
-        if (arg == "-t" || arg == "--terminal") {
-            is_terminal = true;
-        } else if (arg == "-s" || arg == "--system-wide") {
-            system_wide = true;
-        } else {
-            positionals.push_back(arg);
-        }
+        (arg.starts_with("--") || arg.starts_with("-")) ? flags.push_back(arg) : arguments.push_back(arg);
     }
 
-    if (positionals.size() > 0)
-        name = positionals[0];
-    if (positionals.size() > 1)
-        comment = positionals[1];
-    if (positionals.size() > 2)
-        exec_path = positionals[2];
-    if (positionals.size() > 3)
-        icon_path = positionals[3];
-    if (positionals.size() > 4)
-        categories = positionals[4];
+    for (size_t i = 0; i < flags.size(); ++i) {
+        std::string flag = flags.at(i);
+
+        if (flag == "-t" || flag == "--terminal") is_terminal = true;
+        if (flag == "-s" || flag == "--system-wide") system_wide = true;
+    }
+
+    if (arguments.size() > 0) name = arguments[0];
+    if (arguments.size() > 1) comment = arguments[1];
+    if (arguments.size() > 2) exec_path = arguments[2];
+    if (arguments.size() > 3) icon_path = arguments[3];
+    if (arguments.size() > 4) categories = arguments[4];
 
     return DesktopFile(name, comment, exec_path, icon_path, is_terminal,
                        categories, system_wide);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
