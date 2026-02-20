@@ -5,8 +5,8 @@ INCLUDE := -Iinclude
 CFLAGS_DEBUG := -Wall -Wextra -pedantic-errors -std=c++23 -g $(INCLUDE)
 CFLAGS_RELEASE := -O3 -flto -DNDEBUG -mtune=generic -std=c++23 -march=x86-64 $(INCLUDE)
 
-BIN := bin/tgpc
-BIN_DEBUG := bin/tgpc-debug
+BIN := bin/deskcli
+BIN_DEBUG := bin/deskcli-debug
 
 all: $(BIN_DEBUG)
 
@@ -19,11 +19,8 @@ release: $(SRC)
 run: $(BIN_DEBUG)
 	./$(BIN_DEBUG)
 
-build: release
-	mv ./$(BIN) ~/.local/bin/tgpc
-
 install: release
-	mv ./$(BIN) ~/.local/bin/tgpc
+	mv ./$(BIN) ~/.local/bin/deskcli
 
 clean:
 	rm -f $(BIN) $(BIN_DEBUG) $(TEST_BIN)

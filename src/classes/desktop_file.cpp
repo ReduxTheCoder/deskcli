@@ -4,10 +4,17 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include <exception>
 #include <vector>
 
 using path = std::filesystem::path;
+
+static void display_help() {
+    std::cout << "Usage:\n";
+    std::cout << "  deskcli name comment exec_path icon_path categories\n";
+    std::cout << "Flags:\n";
+    std::cout << "  -t, --terminal: should the app the .desktop file points to be a terminal app?\n";
+    std::cout << "  -s, --system-wide: should the .desktop file be usable by all users?\n";
+}
 
 static std::string get_home_path() {
     const char *home = std::getenv("HOME");
@@ -71,6 +78,10 @@ DesktopFile build_desktop_file_class(int argc, const char **argv) {
 
         if (flag == "-t" || flag == "--terminal") is_terminal = true;
         if (flag == "-s" || flag == "--system-wide") system_wide = true;
+        if (flag == "-h" || flag == "--help") {
+            display_help();
+            std::exit(0);
+        };
     }
 
     if (arguments.size() > 0) name = arguments[0];
@@ -82,18 +93,3 @@ DesktopFile build_desktop_file_class(int argc, const char **argv) {
     return DesktopFile(name, comment, exec_path, icon_path, is_terminal,
                        categories, system_wide);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
