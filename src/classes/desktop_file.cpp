@@ -1,4 +1,5 @@
 #include "classes/desktop_file.hpp"
+#include "globals.hpp"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -12,8 +13,10 @@ static void display_help() {
     std::cout << "Usage:\n";
     std::cout << "  deskcli name comment exec_path icon_path categories\n";
     std::cout << "Flags:\n";
-    std::cout << "  -t, --terminal: should the app the .desktop file points to be a terminal app?\n";
-    std::cout << "  -s, --system-wide: should the .desktop file be usable by all users?\n";
+    std::cout << "  -t, --terminal: should the app the .desktop file points to "
+                 "be a terminal app?\n";
+    std::cout << "  -s, --system-wide: should the .desktop file be usable by "
+                 "all users?\n";
 }
 
 static std::string get_home_path() {
@@ -70,25 +73,35 @@ DesktopFile build_desktop_file_class(int argc, const char **argv) {
     for (int i = 1; i < argc; ++i) {
         std::string arg(argv[i]);
 
-        (arg.starts_with("--") || arg.starts_with("-")) ? flags.push_back(arg) : arguments.push_back(arg);
+        (arg.starts_with("--") || arg.starts_with("-"))
+            ? flags.push_back(arg)
+            : arguments.push_back(arg);
     }
 
     for (size_t i = 0; i < flags.size(); ++i) {
         std::string flag = flags.at(i);
 
-        if (flag == "-t" || flag == "--terminal") is_terminal = true;
-        if (flag == "-s" || flag == "--system-wide") system_wide = true;
+        if (flag == "-t" || flag == "--terminal")
+            is_terminal = true;
+        if (flag == "-s" || flag == "--system-wide")
+            system_wide = true;
         if (flag == "-h" || flag == "--help") {
             display_help();
             std::exit(0);
         };
+        if (flag == "--verbose") verbose = true;
     }
 
-    if (arguments.size() > 0) name = arguments[0];
-    if (arguments.size() > 1) comment = arguments[1];
-    if (arguments.size() > 2) exec_path = arguments[2];
-    if (arguments.size() > 3) icon_path = arguments[3];
-    if (arguments.size() > 4) categories = arguments[4];
+    if (arguments.size() > 0)
+        name = arguments[0];
+    if (arguments.size() > 1)
+        comment = arguments[1];
+    if (arguments.size() > 2)
+        exec_path = arguments[2];
+    if (arguments.size() > 3)
+        icon_path = arguments[3];
+    if (arguments.size() > 4)
+        categories = arguments[4];
 
     return DesktopFile(name, comment, exec_path, icon_path, is_terminal,
                        categories, system_wide);
