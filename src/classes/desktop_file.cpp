@@ -1,5 +1,6 @@
 #include "classes/desktop_file.hpp"
 #include "globals.hpp"
+#include "other/logging.hpp"
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -17,6 +18,8 @@ static void display_help() {
                  "be a terminal app?\n";
     std::cout << "  -s, --system-wide: should the .desktop file be usable by "
                  "all users?\n";
+    std::cout << "  --verbose: verbose mode\n";
+    std::cout << "  -h, --help: display this help message\n";
 }
 
 static std::string get_home_path() {
@@ -36,6 +39,8 @@ void DesktopFile::to_filesystem() const {
 
     path target_path = base / (name + ".desktop");
 
+    logging::log("Target path: " + target_path.string() + "\n", logging::Level::Debug);
+
     if (std::filesystem::exists(target_path)) {
         std::string file_type;
         std::string command;
@@ -50,11 +55,20 @@ void DesktopFile::to_filesystem() const {
                                  command + " " + target_path.string() + "`\n");
     }
 
+    logging::log("Creating .desktop file\n", logging::Level::Debug);
     std::ofstream file(target_path);
+
     if (!file) {
         throw std::runtime_error("Failed to create " + target_path.string() +
                                  " file.");
     }
+
+    logging::log("Writing to .desktop file\n", logging::Level::Debug);
+    logging::log("[Desktop Entry]\nName=" + name + "\nComment=" + comment +
+                     "\nExec=" + exec_path + "\nIcon=" + icon_path +
+                     "\nTerminal=" + bool_to_string(is_terminal) +
+                     "\nType=Application\nCategories=" + categories + "\n",
+                 logging::Level::Debug);
 
     file << "[Desktop Entry]\nName=" << name << "\nComment=" << comment
          << "\nExec=" << exec_path << "\nIcon=" << icon_path
@@ -89,7 +103,8 @@ DesktopFile build_desktop_file_class(int argc, const char **argv) {
             display_help();
             std::exit(0);
         };
-        if (flag == "--verbose") verbose = true;
+        if (flag == "--verbose")
+            verbose = true;
     }
 
     if (arguments.size() > 0)

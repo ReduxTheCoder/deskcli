@@ -6,28 +6,22 @@
 
 namespace logging {
 void log(std::string_view msg, Level level) {
-    if (verbose && level == Level::Debug) {
-        return;
-    }
-
     switch (level) {
     case Level::Debug: {
-        if (verbose)
+        if (!verbose) {
             return;
+        }
 
         std::cout << ansi::ORANGE << msg << ansi::RESET;
+        break;
     }
     case Level::Warning: {
-        if (verbose)
-            return;
-
         std::cout << ansi::YELLOW << msg << ansi::RESET;
+        break;
     }
     case Level::Error: {
-        if (verbose)
-            return;
-
-        std::cout << ansi::RED << msg << ansi::RESET;
+        std::cerr << ansi::RED << msg << ansi::RESET;
+        break;
     }
     }
 }
